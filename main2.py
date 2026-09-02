@@ -39,8 +39,8 @@ MUSIC_DURATION = 15.0
 EVENT_CHANCES = {
     "kill": {
         "music": 0.06,
-        "drop_weapon": 0.04,
-        "reverse_mouse": 0.5,
+        "drop_weapon": 0.15,
+        "reverse_mouse": 0.1,
     },
     "assist": {
         "music": 0.08,
@@ -49,7 +49,7 @@ EVENT_CHANCES = {
     },
     "death": {
         "music": 0.10,
-        "reverse_mouse": 0.04,
+        "reverse_mouse": 0.30,
         "exit_game": 0.03,
     },
     "mvp": {
@@ -305,9 +305,10 @@ $player.Stop()
         # Перехват мыши выполняется отдельным daemon-thread.
         duration = REVERSE_MOUSE_DURATION
 
-        self.reverse_mouse_until = (
-            time.monotonic() + duration
-        )
+        # self.reverse_mouse_until = (
+        #     time.monotonic() + duration
+        # )
+        reverse_mouse_worker()
 
         return duration
 
