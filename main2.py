@@ -435,8 +435,7 @@ def play_video_fullscreen(video_path):
     Воспроизводит видео на весь экран с помощью tkinter + VLC.
     Окно автоматически закрывается по окончании видео.
     """
-    root = tk.Tk()
-    root.overrideredirect(True)          # без рамок
+    root = tk.Tk()        # без рамок
     root.attributes('-topmost', True)    # поверх всех окон
     root.attributes('-fullscreen', True) # полноэкранный режим
     root.configure(bg='black')
