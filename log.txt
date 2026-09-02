@@ -1002,3 +1002,4 @@
 {"provider":{"name":"Counter-Strike: Global Offensive","appid":730,"version":14178,"steamid":"76561198960883585","timestamp":1788370412},"player":{"steamid":"76561198960883585","name":"Лис","activity":"menu"}}
 {"provider":{"name":"Counter-Strike: Global Offensive","appid":730,"version":14178,"steamid":"76561198960883585","timestamp":1788371090},"player":{"steamid":"76561198960883585","name":"Лис","activity":"menu"}}
 {"provider":{"name":"Counter-Strike: Global Offensive","appid":730,"version":14178,"steamid":"76561198960883585","timestamp":1788371090},"player":{"steamid":"76561198960883585","name":"Лис","activity":"menu"}}
+
