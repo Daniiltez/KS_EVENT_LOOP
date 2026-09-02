@@ -43,8 +43,8 @@ MUSIC_DURATION = 15.0
 EVENT_CHANCES = {
     "kill": {
         "music": 0.06,
-        "drop_weapon": 0.15,
-        "reverse_mouse": 0.1,
+        "drop_weapon": 0.1,
+        "reverse_mouse": 0.08,
     },
     "assist": {
         "music": 0.08,
