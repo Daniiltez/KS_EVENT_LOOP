@@ -7,6 +7,10 @@ import threading
 import time
 from pathlib import Path
 from typing import Optional
+import tkinter as tk
+import random
+import vlc
+
 
 from flask import Flask, jsonify, render_template_string, request
 
@@ -401,27 +405,19 @@ event_manager = EventManager()
 #             print(f"[MOUSE] Ошибка: {exc}")
 #             time.sleep(0.2)
 
-def reverse_mouse_worker():
+def get_random_video_path():
     """
-    Открывает случайное видео из поддиректории /vid в VLC на весь экран.
+    Возвращает абсолютный путь к случайному видеофайлу из папки /vid.
+    Если папка отсутствует или в ней нет поддерживаемых файлов – возвращает None.
     """
-    import os
-    import random
-    import subprocess
-    from pathlib import Path
-
-    # Определяем путь к папке vid относительно текущего файла
     script_dir = Path(__file__).parent
     vid_dir = script_dir / 'vid'
 
     if not vid_dir.exists() or not vid_dir.is_dir():
         print("[VIDEO] Папка /vid не найдена.")
-        return
+        return None
 
-    # Расширения видеофайлов, которые будем искать
     video_exts = {'.mp4', '.avi', '.mkv', '.mov', '.wmv', '.flv', '.webm', '.m4v'}
-
-    # Собираем все файлы с подходящими расширениями
     videos = [
         f for f in vid_dir.iterdir()
         if f.is_file() and f.suffix.lower() in video_exts
@@ -429,24 +425,54 @@ def reverse_mouse_worker():
 
     if not videos:
         print("[VIDEO] В папке /vid нет видеофайлов.")
-        return
+        return None
 
     chosen = random.choice(videos)
-    video_path = str(chosen.absolute())
+    return str(chosen.absolute())
 
-    try:
-        # Запускаем VLC в полноэкранном режиме
-        # --play-and-exit закроет плеер после окончания видео (опционально)
-        subprocess.Popen(
-            ['vlc', '--fullscreen', '--play-and-exit', video_path],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL
-        )
-        print(f"[VIDEO] Запущено видео: {chosen.name}")
-    except FileNotFoundError:
-        print("[VIDEO] VLC не найден. Убедитесь, что он установлен и доступен в PATH.")
-    except Exception as e:
-        print(f"[VIDEO] Ошибка запуска VLC: {e}")
+def play_video_fullscreen(video_path):
+    """
+    Воспроизводит видео на весь экран с помощью tkinter + VLC.
+    Окно автоматически закрывается по окончании видео.
+    """
+    root = tk.Tk()
+    root.overrideredirect(True)          # без рамок
+    root.attributes('-topmost', True)    # поверх всех окон
+    root.attributes('-fullscreen', True) # полноэкранный режим
+    root.configure(bg='black')
+
+    frame = tk.Frame(root, bg='black')
+    frame.pack(fill=tk.BOTH, expand=True)
+
+    instance = vlc.Instance()
+    player = instance.media_player_new()
+    media = instance.media_new(video_path)
+    player.set_media(media)
+    player.set_hwnd(frame.winfo_id())
+    player.play()
+
+    def check_end():
+        if player.get_state() in (vlc.State.Ended, vlc.State.Stopped, vlc.State.Error):
+            root.destroy()
+            return
+        root.after(500, check_end)
+
+    root.after(500, check_end)
+    root.mainloop()
+    player.stop()
+    instance.release()
+
+def reverse_mouse_worker():
+    """
+    Открывает случайное видео из поддиректории /vid на весь экран.
+    Использует встроенный плеер на основе tkinter + VLC вместо subprocess.
+    """
+    video_path = get_random_video_path()
+    if video_path is None:
+        return
+
+    print(f"[VIDEO] Запущено видео: {Path(video_path).name}")
+    play_video_fullscreen(video_path)
 
 threading.Thread(
     target=reverse_mouse_worker,
