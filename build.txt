@@ -1,0 +1,1 @@
+pyinstaller --onedir --uac-admin --name "CS2_Event_Loop" --add-data "music;music" --add-data "vid;vid" --hidden-import cs_class --hidden-import vlc main2.py
